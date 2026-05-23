@@ -1,17 +1,17 @@
-# Lead Conversion Prediction — SOS Creativity
+# Lead Conversion Prediction
 
-![GitHub last commit](https://img.shields.io/github/last-commit/yourusername/lead-conversion-prediction)
-![GitHub](https://img.shields.io/github/license/yourusername/lead-conversion-prediction)
+![GitHub last commit](https://img.shields.io/github/last-commit/ajiboyeniola/lead-scoring)
+![GitHub](https://img.shields.io/github/license/ajiboyeniola/lead-scoring)
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
 ![Status](https://img.shields.io/badge/Status-Complete-green)
 
-> Predicting which leads will convert into paying customers using machine learning — and translating model performance into measurable business value.
+> Predicting which leads will convert into paying customers using machine learning  and translating model performance into measurable business value.
 
 ---
 
 ## Project Overview
 
-SOS Creativity's sales team was treating all leads equally — spending the same time on cold leads as hot ones, with no way to prioritise who to contact first. This project builds a supervised machine learning model that predicts the probability of a lead converting into a paying customer, assigns every lead an actionable priority tier, and translates model output into measurable business value.
+Aurnect Creativity's sales team was treating all leads equally spending the same time on cold leads as hot ones, with no way to prioritise who to contact first. This project builds a supervised machine learning model that predicts the probability of a lead converting into a paying customer, assigns every lead an actionable priority tier, and translates model output into measurable business value.
 
 **The key finding:** The ML-optimal threshold (0.61, best F1 score) is not the same as the business-optimal threshold (0.35, best net profit). Lowering the decision threshold from 0.61 to 0.35 generates an additional **$14,275 in net profit** by catching 22 more real converters at an outreach cost far outweighed by the revenue gained.
 
@@ -43,7 +43,7 @@ pip install pandas numpy scikit-learn xgboost joblib matplotlib seaborn
 
 ### Source Data
 
-The dataset contains **2,000 leads** from SOS Creativity's CRM with the following feature categories:
+The dataset contains **2,000 leads** from Aurnect Creativity's CRM with the following feature categories:
 
 | Category | Features |
 |---|---|
@@ -58,7 +58,7 @@ The dataset contains **2,000 leads** from SOS Creativity's CRM with the followin
 
 ### Data Acquisition
 
-Data was sourced directly from SOS Creativity's internal CRM system.
+Data was sourced directly from Aurnect Creativity's internal CRM system.
 
 ### Data Preprocessing
 
@@ -156,7 +156,7 @@ ROC-AUC improved from **0.8188 → 0.8295** on the test set after tuning.
 | ROI on outreach | 5.9× |
 | Converters caught | 80 out of 98 (82%) |
 
-*Based on estimated $560 average revenue per conversion and $30 cost per outreach for SOS Creativity.*
+*Based on estimated $560 average revenue per conversion and $30 cost per outreach for Aurnect Creativity.*
 
 **Key insight:**
 

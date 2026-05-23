@@ -25,6 +25,9 @@ def generate_leads(n=2000):
 
     company_assignments = np.random.choice(unique_companies, n)
 
+    # --- Engagement score drives behavioral features ---
+    engagement = np.random.beta(2, 6, n)
+
     # --- Categorical columns ---
     lead_source = np.random.choice(
         ["LinkedIn", "Referral", "Website",
@@ -38,25 +41,16 @@ def generate_leads(n=2000):
 
     industry = np.random.choice(
         [
-            # Professional services
             "Technology", "Healthcare", "Finance", "Legal",
             "Consulting", "Real Estate", "Education",
-
-            # Small & lifestyle businesses
             "Fashion & Apparel", "Beauty & Wellness", "Food & Beverage",
             "Home Decor", "Jewelry & Accessories", "Photography",
             "Interior Design", "Fitness & Wellness", "Hair & Skincare",
             "Event Planning", "Catering", "Handmade & Crafts",
-
-            # Retail & ecommerce
             "Retail", "E-commerce", "Thrift & Vintage",
             "Children & Baby Products", "Pet Products",
-
-            # Creative & media
             "Entertainment", "Content Creation", "Music",
             "Art & Illustration", "Videography", "Podcasting",
-
-            # Other
             "Logistics", "Construction", "Non-Profit", "Agriculture"
         ], n
     )
@@ -89,29 +83,69 @@ def generate_leads(n=2000):
         ["Morning", "Afternoon", "Evening"], n
     )
 
-    # --- Realistic binary columns ---
-    demo_requested = np.random.choice(
-        [0, 1], n, p=[0.8, 0.2]
-    )
-    webinar_attended = np.random.choice(
-        [0, 1], n, p=[0.75, 0.25]
-    )
-    budget_indicated = np.random.choice(
-        [0, 1], n, p=[0.7, 0.3]
-    )
+    # --- Binary columns driven by engagement ---
+    demo_requested = (
+        engagement + np.random.normal(0, 0.2, n) > 0.6
+    ).astype(int)
+
+    webinar_attended = (
+        engagement + np.random.normal(0, 0.2, n) > 0.65
+    ).astype(int)
+
+    budget_indicated = (
+        engagement + np.random.normal(0, 0.2, n) > 0.55
+    ).astype(int)
+
     decision_maker = np.random.choice(
         [0, 1], n, p=[0.65, 0.35]
     )
 
-    # --- Correlated behavioral columns ---
-    website_visits = np.random.exponential(scale=15, size=n).astype(int)
-    website_visits = np.clip(website_visits, 0, 50)
+    # --- New Tier 1 features driven by engagement ---
+
+    # Email reply rate — engaged leads reply more
+    email_reply_rate = np.clip(
+        engagement + np.random.normal(0, 0.15, n), 0, 1
+    ).round(2)
+
+    # Response time — engaged leads respond faster
+    response_time_days = np.clip(
+        (1 - engagement) * 14 + np.random.exponential(2, n), 0.5, 30
+    ).round(1)
+
+    # Interactions in last 30 days — engaged leads more active recently
+    interactions_last_30_days = np.clip(
+        np.random.poisson(engagement * 10 + 1, n), 0, 20
+    )
+
+    # Pricing page visited — engaged leads visit high intent pages
+    pricing_page_visited = (
+        engagement + np.random.normal(0, 0.2, n) > 0.6
+    ).astype(int)
+
+    # Meeting held — driven by engagement + sales follow up
+    meeting_held = (
+        engagement + np.random.normal(0, 0.15, n) > 0.65
+    ).astype(int)
+
+    # Proposal sent — only happens after meeting
+    proposal_sent = np.where(
+        meeting_held == 1,
+        (engagement + np.random.normal(0, 0.2, n) > 0.55).astype(int),
+        0
+    )
+
+    # --- Behavioral columns driven by engagement ---
+    website_visits = np.clip(
+        np.random.poisson(engagement * 30 + 1, n), 0, 50
+    )
 
     pages_viewed = np.clip(
         website_visits + np.random.randint(0, 5, n), 1, 60
     )
 
-    email_opens = np.random.randint(0, 20, n)
+    email_opens = np.clip(
+        np.random.poisson(engagement * 20 + 1, n), 0, 25
+    )
 
     email_opens = np.where(
         webinar_attended == 1,
@@ -120,8 +154,16 @@ def generate_leads(n=2000):
     )
 
     email_clicks = np.clip(
-        (email_opens * 0.5).astype(int) + np.random.randint(0, 3, n),
+        (email_opens * 0.6).astype(int) + np.random.randint(0, 3, n),
         0, 15
+    )
+
+    content_downloads = np.clip(
+        np.random.poisson(engagement * 8 + 0.5, n), 0, 10
+    )
+
+    ad_clicks = np.clip(
+        np.random.poisson(engagement * 6 + 0.5, n), 0, 15
     )
 
     num_contacts = np.where(
@@ -130,21 +172,15 @@ def generate_leads(n=2000):
         np.random.randint(1, 10, n)
     )
 
-    content_downloads = np.random.exponential(scale=2, size=n).astype(int)
-    content_downloads = np.clip(content_downloads, 0, 10)
+    # Engaged leads contacted more recently
+    days_since_last_contact = np.clip(
+        np.random.poisson((1 - engagement) * 80 + 5, n), 1, 180
+    )
 
-    ad_clicks = np.random.exponential(scale=3, size=n).astype(int)
-    ad_clicks = np.clip(ad_clicks, 0, 15)
-
-    days_since_last_contact = np.random.exponential(scale=40, size=n).astype(int)
-    days_since_last_contact = np.clip(days_since_last_contact, 1, 180)
-
-    # --- Randomized created_date ---
-    # More recent leads are more common
+    # --- Created date ---
     days_back = np.random.exponential(scale=200, size=n).astype(int)
     days_back = np.clip(days_back, 1, 730)
     created_date = pd.Timestamp.today() - pd.to_timedelta(days_back, unit='D')
-
     lead_age_days = (pd.Timestamp.today() - created_date).days
 
     # --- Funnel stage weights ---
@@ -153,33 +189,46 @@ def generate_leads(n=2000):
         for s in funnel_stage
     ])
 
-    # --- Behavior-based conversion score ---
-    score = (
-        email_opens * 0.01 +
-        email_clicks * 0.05 +
-        website_visits * 0.03 +
-        pages_viewed * 0.02 +
-        content_downloads * 0.04 +
-        ad_clicks * 0.03 +
-        demo_requested * 0.30 +
-        decision_maker * 0.20 +
-        budget_indicated * 0.15 +
-        webinar_attended * 0.10 +
-        stage_weights -
-        days_since_last_contact * 0.01
+    # --- Conversion score using logit ---
+    logit = (
+        -3.0 +
+
+        # Strong binary signals
+        2.0 * demo_requested +
+        1.5 * budget_indicated +
+        1.2 * decision_maker +
+        1.0 * webinar_attended +
+
+        # New strong signals
+        2.5 * proposal_sent +
+        1.8 * meeting_held +
+        1.5 * pricing_page_visited +
+        1.2 * email_reply_rate +
+        -0.8 * (response_time_days / 30) +
+
+        # Funnel stage
+        stage_weights * 2.0 +
+
+        # Behavioral signals normalized
+        0.8 * (website_visits / 50) +
+        0.7 * (email_opens / 25) +
+        0.6 * (email_clicks / 15) +
+        0.5 * (content_downloads / 10) +
+        0.4 * (pages_viewed / 60) +
+        0.3 * (interactions_last_30_days / 20) +
+        0.2 * (ad_clicks / 15) +
+
+        # Recency
+        -1.0 * (days_since_last_contact / 180) +
+
+        # Low noise
+        np.random.normal(0, 0.3, n)
     )
 
-    # Normalize to 0-1
-    prob = (score - score.min()) / (score.max() - score.min())
+    # Convert to probability using sigmoid
+    prob = 1 / (1 + np.exp(-logit))
 
-    # Scale down to realistic conversion rate 10-25%
-    prob = prob * 0.35
-
-    # Add noise for realism
-    noise = np.random.normal(0, 0.05, n)
-    prob = np.clip(prob + noise, 0, 1)
-
-    # Sample conversions based on probability
+    # Sample conversions
     converted = np.array([
         np.random.choice([0, 1], p=[1 - p, p]) for p in prob
     ])
@@ -193,9 +242,14 @@ def generate_leads(n=2000):
         "lead_age_days": lead_age_days,
         "email_opens": email_opens,
         "email_clicks": email_clicks,
+        "email_reply_rate": email_reply_rate,
+        "response_time_days": response_time_days,
         "website_visits": website_visits,
         "pages_viewed": pages_viewed,
+        "pricing_page_visited": pricing_page_visited,
         "demo_requested": demo_requested,
+        "meeting_held": meeting_held,
+        "proposal_sent": proposal_sent,
         "content_downloads": content_downloads,
         "webinar_attended": webinar_attended,
         "industry": industry,
@@ -205,6 +259,7 @@ def generate_leads(n=2000):
         "budget_indicated": budget_indicated,
         "decision_maker": decision_maker,
         "days_since_last_contact": days_since_last_contact,
+        "interactions_last_30_days": interactions_last_30_days,
         "num_contacts": num_contacts,
         "lead_source": lead_source,
         "ad_clicks": ad_clicks,
@@ -213,14 +268,24 @@ def generate_leads(n=2000):
         "converted": converted
     })
 
-    # --- Inject missing values for realism ---
+    # --- Inject missing values ---
     for col, rate in [
         ("budget_indicated", 0.35),
         ("days_since_last_contact", 0.03),
         ("ad_platform", 0.04),
-        ("job_title", 0.30)
+        ("job_title", 0.30),
+        ("email_reply_rate", 0.10),
+        ("response_time_days", 0.10),
+        ("pricing_page_visited", 0.05),
     ]:
         mask = np.random.rand(n) < rate
         df.loc[mask, col] = np.nan
 
     return df
+
+
+# Generate and save
+df = generate_leads(n=2000)
+print(df.shape)
+print(df['converted'].value_counts())
+print(df.head())

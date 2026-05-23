@@ -1,7 +1,5 @@
 # Lead Conversion Prediction
 
-![GitHub last commit](https://img.shields.io/github/last-commit/ajiboyeniola/lead-scoring)
-![GitHub](https://img.shields.io/github/license/ajiboyeniola/lead-scoring)
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
 ![Status](https://img.shields.io/badge/Status-Complete-green)
 

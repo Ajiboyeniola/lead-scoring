@@ -135,7 +135,7 @@ ROC-AUC improved from **0.8188 → 0.8295** on the test set after tuning.
 | Recall | 0.66 | 0.59 | 0.82 |
 | F1 | 0.62 | 0.66 | 0.57 |
 | Converters caught | 65 / 98 | 58 / 98 | 80 / 98 |
-| Net Profit | — | $52,150 | **$66,425** |
+| Net Profit | — | $30,140 | **$39,370** |
 
 ### Lead Prioritisation Tiers
 
@@ -149,8 +149,8 @@ ROC-AUC improved from **0.8188 → 0.8295** on the test set after tuning.
 
 | Metric | Value |
 |---|---|
-| Revenue captured | $80,000 |
-| Net profit generated | $66,425 |
+| Revenue captured | $44,800 |
+| Net profit generated | $39,370 |
 | ROI on outreach | 5.9× |
 | Converters caught | 80 out of 98 (82%) |
 
@@ -164,7 +164,7 @@ ROC-AUC improved from **0.8188 → 0.8295** on the test set after tuning.
 
 ## Future Work
 
-- **FastAPI deployment** — serve the model as a REST API so any system can score leads in real time (in progress — see `lead-scoring-api` repository)
+- **FastAPI deployment** — serve the model as a REST API so any system can score leads in real time
 - **Docker containerisation** — package the API so it runs consistently in any environment
 - **Cloud deployment** — deploy to Railway or AWS for a live, shareable endpoint
 - **Power BI dashboard** — visualise lead scores, tier distributions, and business impact metrics for stakeholders

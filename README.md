@@ -15,6 +15,17 @@ Aurnect Creativity's sales team was treating all leads equally spending the same
 
 ---
 
+## Live Demo
+
+| Service | URL |
+|---|---|
+| API (Swagger Docs) | [https://lead-scoring-api-eig5.onrender.com/docs](https://lead-scoring-api-eig5.onrender.com/docs) |
+| Streamlit Frontend | [https://lead-scoring-streamlit.onrender.com](https://lead-scoring-streamlit.onrender.com) |
+
+> **Note:** Services are hosted on Render's free tier and may take 30–60 seconds to wake up after inactivity.
+
+---
+
 ## Installation and Setup
 
 ### Codes and Resources Used
@@ -162,11 +173,8 @@ ROC-AUC improved from **0.8188 → 0.8295** on the test set after tuning.
 
 ---
 
-## Future Work
+## Author
 
-- **FastAPI deployment** — serve the model as a REST API so any system can score leads in real time
-- **Docker containerisation** — package the API so it runs consistently in any environment
-- **Cloud deployment** — deploy to Railway or AWS for a live, shareable endpoint
-- **Power BI dashboard** — visualise lead scores, tier distributions, and business impact metrics for stakeholders
-- **Model monitoring** — track conversion rates of High Priority leads over time to detect model drift
-- **Automated retraining** — retrain quarterly as new lead data with known outcomes accumulates
+**Eniola Ajiboye**
+- GitHub: [@Ajiboyeniola](https://github.com/Ajiboyeniola)
+- Email: ajiboyeniola@gmail.com
